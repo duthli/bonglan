@@ -16,10 +16,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         let time = NSTimer.scheduledTimerWithTimeInterval(0.02, target: self, selector: #selector (rollBall), userInfo: nil, repeats: true)
+
         addBall()
-        //rollBall()
-        moveBall()
-    }
+        rollBall()    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -32,40 +31,41 @@ class ViewController: UIViewController {
         ball.center = CGPointMake(ballRadious, ViewSize.height * 0.5)
         self.view.addSubview(ball)
     }
-    var x = CGFloat()
+    
+    var deltaAngle: CGFloat = 0.1
     func rollBall(){
-        let deltaAngle: CGFloat = 0.1
-        rad = rad + deltaAngle * x
+        //var deltaAngle: CGFloat = 0.1
+        rad = rad + deltaAngle
         ball.transform = CGAffineTransformMakeRotation(rad)
-        //ball.center = CGPointMake(ball.center.x + (ballRadious * deltaAngle) , self.view.bounds.size.height * 0.5)
-    }
-    func moveBall(){
-        UIView.animateWithDuration(4, animations: {
-            self.ball.center = CGPointMake(self.view.bounds.size.width-32.0, self.yoffset + self.ballRadious)
-                self.x = 1
-            self.Random()
-            })
-        {(finished) in
+//        ball.center = CGPointMake(ball.center.x + (ballRadious * deltaAngle * x) , self.view.bounds.size.height * 0.5)
+        ball.center.x = ball.center.x + (ballRadious * deltaAngle)
+        ball.center.y = ball.center.y + (yoffset * deltaAngle)
+        if(ball.center.x > self.view.bounds.size.width - ballRadious || ball.center.y > self.view.bounds.size.height){
+            deltaAngle = -0.1
+            Random()
             
-            UIView.animateWithDuration(4, animations: {
-                self.ball.center = CGPointMake(32.0, self.yoffset)
-                self.x = -1
-                })
-            {(finished) in
-                self.x = 1
-                self.moveBall()
+            if(yoffset > self.view.bounds.size.width){
+                deltaAngle = deltaAngle / yoffset/ball.center.y
+            }
+        }
+        if (ball.center.x < ballRadious || ball.center.y < ballRadious){
+            deltaAngle = 0.1
+            Random()
+            if(yoffset > self.view.bounds.size.width){
+                deltaAngle = deltaAngle / yoffset/ball.center.y
             }
         }
     }
-//    func moveBalldaplai(){
+//    func moveBall(){
 //        UIView.animateWithDuration(4, animations: {
-//            self.ball.center = CGPointMake(self.view.bounds.size.width-50, self.view.bounds.size.height * 0.5)
-//            self.x = 1
+//            self.ball.center = CGPointMake(self.view.bounds.size.width-32.0, self.yoffset + self.ballRadious)
+//                self.x = 1
+//            self.Random()
 //            })
 //        {(finished) in
 //            
 //            UIView.animateWithDuration(4, animations: {
-//                self.ball.center = CGPointMake(50, self.view.bounds.size.height * 0.5)
+//                self.ball.center = CGPointMake(32.0, self.yoffset)
 //                self.x = -1
 //                })
 //            {(finished) in
@@ -76,7 +76,7 @@ class ViewController: UIViewController {
 //    }
     var yoffset = CGFloat()
     func Random(){
-        let yheight = self.view.bounds.size.height - 50
+        let yheight = self.view.bounds.size.height - ballRadious
         yoffset = CGFloat(arc4random_uniform(UInt32(yheight)))
     }
 }
